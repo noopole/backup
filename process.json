@@ -1,0 +1,17 @@
+{
+  "apps" : [{
+    "name"        : "server",
+    "script"      : "/www/aws/server/server.js",
+    "cwd"         : "/www/aws",
+    "watch"       : true,
+    "ignore_watch": ["node_modules", "public"],
+    "instances"   : 4,
+    "env": {
+      "NODE_ENV": "development",
+      "PORT": 3000
+    },
+    "env_production" : {
+       "NODE_ENV": "production"
+    }
+  }]
+}

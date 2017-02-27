@@ -1,0 +1,92 @@
+body {
+    font-family: Calibri Light, Arial ;
+    
+    counter-reset: titre2 ;
+
+    --title-color: mediumblue ;
+}
+
+
+h1 {
+    color: var(--title-color) ;
+}
+
+
+h2 {
+    color: var(--title-color) ;
+    counter-reset: titre3 ;
+    margin: 30px 0 10px ;
+}
+    h2::before {
+        counter-increment: titre2 ;
+        content: counter(titre2) ". " ;
+    }
+
+h3 {
+    color: var(--title-color) ;
+    opacity: 0.9 ;
+    margin: 20px 0 10px 20px ;
+}
+    h3::before {
+        counter-increment: titre3 ;
+        content: counter(titre2) "." counter(titre3) " "
+    }
+
+table {
+    border-collapse: collapse ;
+    border: none !important ;
+}
+    th {
+        border-width: 0 1px 1px 0 ;
+        border-color: #ddd ;
+        border-style: solid ;
+        text-align: right ;
+        padding-right: 5px ;
+    }
+        tr:last-child th, tr:last-child td {
+            border-bottom: none ;
+        }
+    td {
+        border-width: 0 0 1px 0 ;
+        border-color: #ddd ;
+        border-style: solid ;
+        padding-left: 5px ;     
+    }
+
+.hostname {
+    background: #eee ;
+    font-family: Courier ;
+    padding: 0 3px ;
+}
+
+
+code {
+    display: inline-block ;
+    background: #eee ;
+    font-family: Courier ;
+    padding: 0 2px ;
+}
+
+i {
+    color: var(--title-color) ;
+    font-weight: 600 ;
+}
+
+p {
+    margin: 0 20px ;
+}
+    p > pre {
+        margin-left: 20px !important ;   
+    }
+
+pre {
+    display: inline-block ;
+    background: #eee ;
+    font-family: Courier ;
+    padding: 0 2px ;
+    margin: 5px 0 ;
+}
+
+ul {
+    margin: 0 ;
+}

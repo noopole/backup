@@ -1,0 +1,136 @@
+<html>
+<head>
+    <title>Server BDS1</title>
+    <link rel=stylesheet href="bsd1.css">
+<body>
+    <h1>Serveur <span class="hostname">bsd1</span></h1>
+    
+    <h2>Matériel</h2>
+
+    <table>
+        <tr>
+            <th>Référence       <td>Intel NUC D34010WYK
+        <tr>
+            <th>CPU             <td>i3-4010U dual-core 1.7GHz Haswell 4th
+        <tr>
+            <th>RAM             <td>4 Go DDR3 SDRAM Kingston KVR16LS11/4   
+        <tr>
+            <th>SSD             <td>56 Go Intel SSD 525 mSTATA 6Gb/s
+        <tr>
+            <th>Wifi            <td>Intel Centrino Advanced-N 6235 dual BT
+    </table>
+
+
+    <h2>Installation</h2>
+
+    <h3>Initiale</h3>
+    
+    <ul>
+        <li>Système : FreeBSD 11 (après upgrade)
+        <li>Image : FreeBSD-10.3-RELEASE-amd64-memstick.img
+        <li>Clavier : fr.iso.kbd (Français ISO)
+        <li>Service activé : sshd
+        <li>Réseau : DHCP IPv4, IPv6 désactivé
+        <li>Utilisateur : root, bruno (groupe wheel)
+        <li>Shell : tcsh 
+        <li>Fuseau horaire : CET   
+    </ul>
+
+    <h3>Complémentaire</h3>
+
+    <ul>
+        <li>Activation du serveur NTP : <code>ntpd_enable="YES"</code> dans <i>/etc/rc.conf</i>
+        <li>Installation de <b>Node.js 7.3.0</b> et <b>NPM 4.0.5</b> :<br><pre>
+# pkg install node
+# pkg install www/npm</pre>
+        <li>Installation de <b>curl 7.52.1</b> :<br><pre>
+# pkg install curl</pre>
+        <li>Installation de <b>PM2 2.3.0</b> :<br><pre>
+# node install -g pm2</pre>
+        <li>Installation de <b>haproxy 1.7.1</b> :<br><pre>
+# pkg install haproxy</pre>
+    </ul>
+
+    <h2>Serveur Web</h2>
+
+    <h3>Reverse Proxy</h3>
+
+    <ul>
+        <li>Configuration de <b>haproxy</b> dans <i>/usr/local/etc/haproxy.conf</i>
+        <li>Activation du service dans <i>/etc/rc.conf</i> :<br>
+            <pre>haproxy_enable=YES</pre>
+    </ul>
+
+    <h3>Service HTTP</h3>
+
+    <ul>
+        <li>Serveur Node dans <i>/www/aws</i>, sur port tcp 3000 :<br>
+            <pre># pm2 start process.json</pre>
+        <li>Service <i>pm2</i> défini dans <i>/etc/rc.d/</i> :<br> 
+            <pre># pm2 startup freebsd</pre>
+        <li>Mise à jour de l'utilisateur <code>root</code> et du chemin du fichier <i>/root/.pm2/root.pid</i>
+
+    </ul>
+
+    <h3>Certificat SSL</h3>
+
+    <ul>
+        <li>PAT des ports tcp 80 et 443 vers <code>bsd1</code> dans Livebox
+        <li>Installation du client <b>Certbot</b> :
+            <pre># pkg install py27-certbot</pre>
+        <li>Création des clés pour <b>escapattes.fr</b> et <b>www.escapattes.fr</b> :<br>
+            <pre># certbot certonly --standalone -d escapattes.fr -d www.escapattes.fr</pre>
+        <li>Génération de la clé privée 2048 bit dans <i>/usr/local/etc/letsencrypt/keys/0000_key-certbot.pem</i>
+        <li>Génération du certificat dans <i>/usr/local/etc/letsencrypt/csr/0000_csr-certbot.pem</i>
+    </ul>
+
+    <h2>Serveur MariaDB</h2>
+
+    <ul>
+        <li>Installation de <b>MariaDB 10.1.21</b> serveur et client :<br>
+            <pre>pkg install databases/mariadb101-server</pre>
+        <li>Enregistrement du service :<br>
+            <pre>echo "mysql_enable=YES" >> /etc/rc.conf</pre>
+        <li>Activation du service :<br>
+            <pre># service mysql-server start</pre>
+        <li>Sécurisation du serveur :<br>
+            <pre># /usr/local/sbin/mysql_secure_installation</pre>
+        <li>Copie de la configuration de base :<br>
+            <pre>cp /usr/local/share/mysql/my-small.cnf /usr/local/etc/my.cnf</pre>
+        <li>Autorisation des connexions de l'exterieur dans <i>my.cnf</i> :<br>
+           <pre>bind 127.0.0.1</pre>
+    </ul>
+
+    <ul>
+        <li>Information : <a href="http://freebsdexperience.blogspot.fr/2014/04/pw-user-messagebus-disappeared-during.html">Corriger le bug sur l'utilisateur mysql</a> à l'installation 
+    </ul>
+    
+
+    <h2>Commandes</h2>
+
+    <ul>
+        <li>Configuration PCI : <code>pciconf -lv</code>
+        <li>Afficher les messages au démarrage : <code>dmesg</code>
+        <li>Afficher les drivers iwn chargés : <code>kldstat -v | grep iwn</code>
+        <li>Afficher les drivers wlan chargés : <code>kldstat -v | grep wlan</code>
+        <li>Afficher l'inteface iwn : <code>sysctl net.wlan.devices</code>
+        <li>Définir une variable d'environnement : <code>set env PORT 3000</code>
+        <li>Test externe de ports et pages : <a href="https://mxtoolbox.com">https://mxtoolbox.com</a>
+    </ul>
+
+    <h2>Wifi</h2>
+
+    <ol>
+        <li>Ajout dans <i>/etc/rc.conf</i> :<br>
+    <pre>
+wlans_iwn0="wlan0"
+ifconfig_wlan0="WPA DHCP"</pre>
+        <li>Ajout dans <i>/etc/wpa_supplicant.conf</i> :<br>
+    <pre>
+network={                           
+    ssid="Livebox-D04A"             
+    psk="[clé]"
+}   </pre>
+    </ol>
+
+       
