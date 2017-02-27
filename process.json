@@ -1,8 +1,8 @@
 {
   "apps" : [{
     "name"        : "server",
-    "script"      : "/www/aws/server/server.js",
-    "cwd"         : "/www/aws",
+    "script"      : "./server/server.js",
+    "cwd"         : ".",
     "watch"       : true,
     "ignore_watch": ["node_modules", "public"],
     "instances"   : 4,
